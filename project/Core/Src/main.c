@@ -86,13 +86,13 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-  /* OTA 双分区:向量表重定向到本固件代码段基址(分区起始+0x200)。
-     必须放在 HAL_Init() 之前:HAL_Init 一开 SysTick 中断,VTOR 若还指向
-     Boot 区(或擦除态 0xFF)就会进错向量。链接器符号 ER_IROM1 基址
-     = 分区 A 0x08010200 或分区 B 0x08020200,随固件烧录位置自动跟随,
-     不写死地址,双分区通用。CubeMX 重生成保留本 USER CODE 区。 */
-  extern uint32_t Image$$ER_IROM1$$Base;   /* 链接器符号:代码段(ER_IROM1)基址 */
-  SCB->VTOR = (uint32_t)&Image$$ER_IROM1$$Base;  /* 向量表按运行地址自校正 */
+  /* OTA 双分区:向量表由 Boot 跳转前设置(Boot/main.c jump_to_app:
+     SCB->VTOR = 目标分区地址+0x200,住 A 设 0x08010200、住 B 设 0x08020200),
+     App 不再自设 VTOR。
+     2026-08-19 修复:原代码 SCB->VTOR = Image$$ER_IROM1$$Base 是编译时常量
+     (恒=0x08010200,旧注释"随烧录位置跟随"是错的)——从 B 区运行时会把 Boot
+     设好的正确值改回 A 区,中断向量指 A 区旧固件(靠旧固件碰巧兼容才没炸,
+     A 区损坏则 B 区运行时中断必 HardFault)。删掉后双分区都真正正确。 */
   /* 栈金丝雀:填哨兵(必须在 HAL_Init 之前!实测 2026-08-18:放 BEGIN 2 太晚,
      HAL 初始化期的栈使用不被哨兵覆盖,used 只显示 8B 假象;
      放这里才能让哨兵覆盖初始化期,扫描才看得到真实峰值——与 Boot 同款时机) */
