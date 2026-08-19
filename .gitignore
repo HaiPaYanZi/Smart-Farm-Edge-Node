@@ -1,0 +1,30 @@
+# ============ Keil MDK-ARM 中间产物(编译垃圾,不提交) ============
+*.o
+*.d
+*.crf
+*.axf
+*.map
+*.lnp
+*.dep
+*.lst
+*.htm
+*.iex
+*.iex2
+*.iex3
+*.uvguix*
+*.bak
+*.log
+build_*.log
+Listings/
+Objects/
+RTE/
+
+# ============ 本地工具/临时文件 ============
+~$*
+*.tmp
+*.exe
+
+# ============ 超大资料包(251M,GitHub 单文件限 100MB,不上传) ============
+官方资料包/
+
+# 注:project.sct 不忽略——OTA 分区偏移(0x08010200)的链接配置,必须入库
